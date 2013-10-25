@@ -1,0 +1,1 @@
+echo $(ls | sed 's/\-.*\.gif//g' | uniq | sed 's \(.*\) "\1" ')

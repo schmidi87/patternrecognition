@@ -1,9 +1,7 @@
+
 path = '../../MPEG7_CE-Shape-1_Part_B/';
 
-% namen der angezeigten klassen
-classes_chosen = {''};
-classes_all = {'apple' 'bat' 'beetle'};
-classes = {'device7' 'apple' 'horseshoe' 'butterfly' 'pencil' 'bell' 'bird' 'bottle' 'brick' 'camel' 'car' 'carriage' 'cattle'};
+classes = {'apple' 'bat' 'beetle' 'bird' 'brick'};
 class_size = 20;
 class_num = size(classes,2);
 
@@ -12,7 +10,7 @@ I = cell(class_size, 1);
 j = 1;
 
 % namen der features
-feature_names = {'roundness' 'compactness' 'formfactor' 'solidity' 'extent' 'euler'};
+feature_names = {'roundness' 'compactness' 'formfactor' 'solidity' 'extent' 'euler' 'minorAxis' 'majorAxis'};
 features = zeros(size(feature_names,2),class_size*class_num);
 
 class_identifier = zeros(class_num*class_size,1);
@@ -30,28 +28,8 @@ for class=0:class_num-1
         features(4,class*class_size+i) = stats(1).Solidity;
         features(5,class*class_size+i) = stats(1).Extent;
         features(6,class*class_size+i) = stats(1).EulerNumber;
+        features(7,class*class_size+i) = stats(1).MinorAxisLength;
+        features(8,class*class_size+i) = stats(1).MajorAxisLength;
+
     end
 end
-
-figure
-for f=1:size(feature_names,2)
-    subplot(3,2,f);
-    sc = gscatter(class_identifier, features(f,:),class_identifier, 'mcrgbk', 'o');
-    legend(classes)
-    set(legend(sc),'visible','off')
-    %
-    title(feature_names{f})
-end
-
-set(legend(sc),'visible','on')
-set(legend(sc),'position',[0 0 0.1 0.5]);
-
-figure
-gscatter(features(1,:), features(5,:),class_identifier, 'mcrgbk', 'o');
-
-
-%scatter(roundness, compactness, 30, color);
-
-
-
-%

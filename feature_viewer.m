@@ -1,0 +1,79 @@
+path = '../../MPEG7_CE-Shape-1_Part_B/';
+
+% namen der angezeigten klassen
+classes_chosen = {''};
+classes_all = {'apple' 'bat' 'beetle'};
+classes = {'apple' 'bat' 'cattle' 'bone' 'brick'};
+
+%%%%%%% CLASSIFY %%%%%%%
+%
+% wenn euler < 0 -> cattle
+% wenn aspectRatio < ?1.8? -> apple
+% wenn aspectRatio > 4 -> bone
+% wenn wenn roundness > 0.4 -> brick
+% sonst bat
+%
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+%classes = {'butterfly'};
+
+class_size = 20;
+class_num = size(classes,2);
+
+D = dir(path);
+I = cell(class_size, 1);
+j = 1;
+
+% namen der features
+feature_names = {'roundness' 'compactness' 'solidity' 'extent' 'euler' 'minorAxis' 'majorAxis' 'aspectRatio'};
+features = zeros(size(feature_names,2),class_size*class_num);
+
+class_identifier = zeros(class_num*class_size,1);
+
+for class=0:class_num-1
+    images = loadImageClass(classes{1+class},path);
+    class_identifier(class*class_size+1:(class+1)*class_size) = class;
+    
+    for i=1:size(images,1)
+        stats = regionprops(images{i},'all');
+        
+        max_area = max([stats.Area]);
+        max_perimeter = max([stats.Perimeter]);
+        aspect_ratio = stats(1).MajorAxisLength / stats(1).MinorAxisLength;
+        
+        features(1,class*class_size+i) = 4*pi*max_area/max_perimeter^2;
+        features(2,class*class_size+i) = sqrt(features(1,class*class_size+i));
+        features(3,class*class_size+i) = stats(1).Solidity;
+        features(4,class*class_size+i) = stats(1).Extent;
+        features(5,class*class_size+i) = stats(1).EulerNumber;
+        features(6,class*class_size+i) = stats(1).MinorAxisLength;
+        features(7,class*class_size+i) = stats(1).MajorAxisLength;
+        features(8,class*class_size+i) = aspect_ratio;
+        
+        %Orientation ist mist
+        %features(7,class*class_size+i) = stats(1).Orientation;
+    end
+end
+
+figure
+for f=1:size(feature_names,2)
+    subplot(3,3,f);
+    sc = gscatter(class_identifier, features(f,:),class_identifier, 'mcrgbk', 'o');
+    legend(classes)
+    set(legend(sc),'visible','off')
+    %
+    title(feature_names{f})
+end
+
+set(legend(sc),'visible','on')
+set(legend(sc),'position',[0 0 0.1 0.5]);
+
+figure
+gscatter(features(1,:), features(5,:),class_identifier, 'mcrgbk', 'o');
+
+
+%scatter(roundness, compactness, 30, color);
+
+
+
+%
