@@ -1,0 +1,12 @@
+function [ I ] = loadImageClass( classname )
+    I = cell(20, 1);
+    D = dir([path )
+    for i=1:size(D,1)
+        if D(i).isdir==0 && strncmp( D(i).name(1:3), classname, 3)
+            tmp = imread([path D(i).name]);
+            tmp = im2bw (tmp, graythresh(tmp));
+            j = j+1;
+        end
+    end
+end
+
